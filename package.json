@@ -1,11 +1,19 @@
 {
   "name": "@cega-fi/cega-sdk-sol",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A sdk to communicate with Cega's Solana SC vaults",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "homepage": "https://github.com/cega-fi/cega-sdk-sol",
   "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "solana",
+    "cega",
+    "defi"
+  ],
   "scripts": {
     "build": "tsc",
     "prepublishOnly": "npm run build",
