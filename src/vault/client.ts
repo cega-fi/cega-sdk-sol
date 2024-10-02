@@ -129,7 +129,7 @@ export class CegaClient {
     let underlyingTokenAccountAddress: PublicKey;
     let userRedeemableTokenAddress: PublicKey;
     let tx = new Transaction();
-    let keypair: Keypair;
+    let keypair: Keypair = Keypair.generate();
 
     // TODO: Why do we need to wrap the SOL if the vault transacts in SOL?
     if (vault.underlyingMint.equals(SOL_PUBKEY)) {
@@ -214,7 +214,7 @@ export class CegaClient {
 
     let underlyingTokenAccountAddress: PublicKey;
     const tx = new Transaction();
-    let keypair: Keypair;
+    let keypair: Keypair = Keypair.generate();
 
     try {
       underlyingTokenAccountAddress = await getAssociatedTokenAddress(
@@ -259,9 +259,9 @@ export class CegaClient {
       throw Error('Cannot remove queued withdraw from empty queue.');
     }
 
-    let currNodeInfo: programTypes.QueueNode;
+    let currNodeInfo: programTypes.QueueNode | null = null;
     let currNodeAddress: PublicKey = withdrawQueueHeaderInfo.head;
-    let prevNodeAddress: PublicKey;
+    let prevNodeAddress: PublicKey = PublicKey.default;
     const { withdrawalQueue } = vault;
 
     for (let i = 0; i < withdrawalQueue.length; i++) {
@@ -277,7 +277,7 @@ export class CegaClient {
       throw Error("Queue node to remove doesn't exist.");
     }
 
-    if (!currNodeInfo.userKey.equals(this.publicKey)) {
+    if (currNodeInfo === null || !currNodeInfo.userKey.equals(this.publicKey)) {
       throw Error('Cannot remove a queue node that you do not own.');
     }
 
@@ -380,7 +380,7 @@ export class CegaClient {
       );
     }
 
-    let underlyingTokenAccountAddress: PublicKey;
+    let underlyingTokenAccountAddress: PublicKey = PublicKey.default;
     const tx = new Transaction();
 
     // Create underlying token account for user if they don't have it
@@ -420,7 +420,7 @@ export class CegaClient {
       ),
     );
 
-    let keypair: Keypair;
+    let keypair: Keypair = Keypair.generate();
     const txSig = await utils.processTransaction(Program.VAULT, this._provider, tx, [keypair]);
     await this.updateState();
     console.log('Withdrawal successful');
@@ -428,7 +428,7 @@ export class CegaClient {
   }
 
   public async updateTokenState() {
-    const vaultTokens = [];
+    const vaultTokens: VaultTokens[] = [];
     await Promise.all(
       this.cegaSDK.vaults.map(async (vault) => {
         const redeemableTokenAccountAddress = await getAssociatedTokenAddress(
@@ -505,7 +505,7 @@ export class CegaClient {
       }
 
       // Create underlying token account for user if they don't have it
-      let underlyingTokenAccountAddress: PublicKey;
+      let underlyingTokenAccountAddress: PublicKey = PublicKey.default;
       try {
         underlyingTokenAccountAddress = await getAssociatedTokenAddress(
           vault.underlyingMint,

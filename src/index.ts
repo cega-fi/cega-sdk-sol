@@ -20,7 +20,6 @@ import * as vaultUtils from './vault/utils';
 import * as vaultTypes from './vault/types';
 import * as vaultInstructions from './vault/instructions';
 import * as vaultProgramTypes from './vault/program-types';
-import * as vaultEvents from './vault/events';
 
 // Flex
 // export {
@@ -42,7 +41,6 @@ export {
   vaultInstructions,
   vaultProgramTypes,
   vaultTypes,
-  vaultEvents,
 };
 
 // Common

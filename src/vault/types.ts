@@ -106,10 +106,10 @@ export interface OptionBarrier {
   assetName: string;
   optionNumber: number;
   assetMint: PublicKey;
-  strikeAbs?: number | undefined; // anchor.BN - TODO: rework for Option<u64>
-  knockInAbs?: number | undefined; // anchor.BN
-  knockOutAbs?: number | undefined; // anchor.BN
-  lastPrice?: number | undefined; // anchor.BN
+  strikeAbs?: number | null; // anchor.BN - TODO: rework for Option<u64>
+  knockInAbs?: number | null; // anchor.BN
+  knockOutAbs?: number | null; // anchor.BN
+  lastPrice?: number | null; // anchor.BN
   isOverridePrice: boolean;
   overridePrice: number;
   oracle: PublicKey;
