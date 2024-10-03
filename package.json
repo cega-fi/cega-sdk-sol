@@ -17,6 +17,7 @@
   "scripts": {
     "build": "tsc",
     "prepublishOnly": "npm run build",
+    "format": "npx prettier --check .",
     "format-fix": "npx prettier --write .",
     "dev-test": "ts-node --files src/tests/index.ts",
     "prepare": "husky install"
@@ -45,11 +46,8 @@
     "lodash": "^4.17.21"
   },
   "lint-staged": {
-    "*.{js, jsx,ts,tsx}": [
-      "eslint --quiet --fix"
-    ],
-    "*.{json,js,ts,jsx,tsx,html}": [
-      "prettier --write --ignore-unknown"
+    "*.{json,js,ts}": [
+      "prettier --check . --ignore-unknown"
     ]
   }
 }
