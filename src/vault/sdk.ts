@@ -31,7 +31,7 @@ import { Program } from '../common/program';
 import * as programTypes from './program-types';
 import * as types from './types';
 import * as vaultConstants from './constants';
-import { SOL_PRIORITY_FEE } from '../../../../src/config/environment';
+import { SOL_PRIORITY_FEE } from '../config/environment';
 
 export class CegaSDK {
   public get isInitialized(): boolean {
@@ -73,7 +73,7 @@ export class CegaSDK {
     return this._stateAddress;
   }
 
-  private _stateAddress: PublicKey;
+  private _stateAddress: PublicKey = PublicKey.default;
 
   // public get vaultAuthority(): PublicKey {
   //   return this._vaultAuthority;
@@ -83,19 +83,28 @@ export class CegaSDK {
     return this._productAuthority;
   }
 
-  private _productAuthority: PublicKey;
+  private _productAuthority: PublicKey = PublicKey.default;
 
   public get state(): types.State {
     return this._state;
   }
 
-  private _state: types.State;
+  private _state: types.State = {
+    stateNonce: new anchor.BN(0),
+    productAuthorityNonce: new anchor.BN(0),
+    admin: PublicKey.default,
+    nextAdmin: PublicKey.default,
+    managementFeePercentage: new anchor.BN(0),
+    yieldFeePercentage: new anchor.BN(0),
+    feeRecipient: PublicKey.default,
+    traderAdmin: PublicKey.default,
+  };
 
   public get products(): types.Product[] {
     return this._products;
   }
 
-  private _products: types.Product[];
+  private _products: types.Product[] = [];
 
   public get vaults(): types.Vault[] {
     return this._vaults;
@@ -1063,7 +1072,7 @@ export class CegaSDK {
   ): Promise<TransactionSignature[]> {
     const txs = [];
     // Dont create ATA for the same address, if there's already an IX to do so.
-    const createATAIxsForAddresses = {};
+    const createATAIxsForAddresses: Record<string, boolean> = {};
 
     for (const entry of entries) {
       await this.updateDepositQueue(entry.productAddress);
@@ -1710,7 +1719,7 @@ export class CegaSDK {
 
     let underlyingTokenAccountAddress: PublicKey;
     const tx = new Transaction();
-    let keypair: Keypair;
+    let keypair: Keypair = Keypair.generate();
 
     try {
       underlyingTokenAccountAddress = await getAssociatedTokenAddress(
@@ -1799,7 +1808,7 @@ export class CegaSDK {
       }
 
       // Create underlying token account for user if they don't have it
-      let underlyingTokenAccountAddress: PublicKey;
+      let underlyingTokenAccountAddress: PublicKey = PublicKey.default;
       try {
         underlyingTokenAccountAddress = await getAssociatedTokenAddress(
           vault.underlyingMint,
@@ -2401,7 +2410,7 @@ export class CegaSDK {
   // Fetches a single vault
   public async fetchVault(address: PublicKey): Promise<types.Vault> {
     const vault = await this.program.account.vault.fetch(address);
-    return this.transformVaultAccountToVault(address, vault);
+    return this.transformVaultAccountToVault(address, vault as unknown as programTypes.Vault);
   }
 
   // This method should mirror that of `updateVaults`

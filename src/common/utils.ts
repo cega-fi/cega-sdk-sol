@@ -189,14 +189,14 @@ async function processTransactionSingle(
         maxRetries: 0,
       });
 
-      confirmedTx = await Promise.race([
+      confirmedTx = (await Promise.race([
         confirmTxPromise,
         new Promise((resolve) =>
           setTimeout(() => {
             resolve(null);
           }, TX_RETRY_INTERVAL),
         ),
-      ]);
+      ])) as anchor.web3.RpcResponseAndContext<anchor.web3.SignatureResult> | null;
       if (confirmedTx) {
         break;
       }
@@ -323,7 +323,9 @@ export function getUnderlyingMappings(network: Network): any {
 }
 
 export function getUnderlyingMapping(network: Network, tokenAddress: PublicKey): string {
-  const underlying = UNDERLYINGS_TO_PUBKEY_MAP[network][tokenAddress.toString()];
+  const underlying = (UNDERLYINGS_TO_PUBKEY_MAP[network] as { [key: string]: string })[
+    tokenAddress.toString()
+  ];
 
   return underlying != undefined ? underlying : tokenAddress.toString();
 }
