@@ -17,19 +17,24 @@
   "scripts": {
     "build": "tsc",
     "prepublishOnly": "npm run build",
-    "format-fix": "npx prettier --write ."
+    "format-fix": "npx prettier --write .",
+    "dev-test": "ts-node --files src/tests/index.ts"
   },
   "devDependencies": {
     "@types/lodash": "^4.17.9",
+    "dotenv": "^16.4.5",
     "lint-staged": "^15.2.10",
     "prettier": "^3.3.3",
+    "ts-node": "^10.9.2",
     "typescript": "^5.6.2"
   },
   "dependencies": {
     "@metaplex-foundation/mpl-token-metadata": "2.2.3",
-    "@project-serum/anchor": "^0.26.0",
-    "@solana/spl-token": "^0.4.8",
+    "@project-serum/anchor": "0.24.2",
+    "@solana/spl-token": "0.2.0",
     "@solana/web3.js": "^1.95.3",
+    "@types/node": "^22.7.4",
+    "buffer-layout": "1.2.2",
     "lodash": "^4.17.21"
   }
 }
