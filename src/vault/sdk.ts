@@ -1,7 +1,3 @@
-/* eslint-disable max-len */
-/* eslint-disable no-plusplus */
-/* eslint-disable no-unreachable-loop */
-/* eslint-disable no-await-in-loop */
 import * as anchor from '@project-serum/anchor';
 import {
   PublicKey,
@@ -1719,7 +1715,7 @@ export class CegaSDK {
 
     let underlyingTokenAccountAddress: PublicKey;
     const tx = new Transaction();
-    let keypair: Keypair = Keypair.generate();
+    const keypair: Keypair = Keypair.generate();
 
     try {
       underlyingTokenAccountAddress = await getAssociatedTokenAddress(
@@ -2061,7 +2057,7 @@ export class CegaSDK {
           underlyingAmount: product.underlyingAmount.toNumber(),
           mapleAccount: product.mapleAccount,
           depositQueueHeader: product.depositQueueHeader,
-          // eslint-disable-next-line max-len
+
           depositQueue: [], // need to call updateDepositQueue separately, there's a race condition where product doesnt exist so cant fetch queueHeader
           isActive: product.isActive,
         };
@@ -2355,7 +2351,7 @@ export class CegaSDK {
         underlyingAmount: product.underlyingAmount.toNumber(),
         mapleAccount: product.mapleAccount,
         depositQueueHeader: product.depositQueueHeader,
-        // eslint-disable-next-line max-len
+
         depositQueue: [], // need to call updateDepositQueue separately, there's a race condition where product doesnt exist so cant fetch queueHeader
         isActive: product.isActive,
       };
