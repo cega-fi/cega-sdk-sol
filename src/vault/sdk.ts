@@ -1708,7 +1708,13 @@ export class CegaSDK {
     const tx = new Transaction();
     let keypair: Keypair;
 
+    console.log('1 Checking if user has associated token account for redeemable mint...');
+
     try {
+      console.log('Checking if user has associated token account for underlying mint...');
+      console.log('User public key: ', this.provider.wallet.publicKey.toString());
+      console.log('Underlying mint: ', product.underlyingMint.toString());
+
       underlyingTokenAccountAddress = await getAssociatedTokenAddress(
         product.underlyingMint,
         this.provider.wallet.publicKey,
