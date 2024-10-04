@@ -1,6 +1,6 @@
 {
   "name": "@cega-fi/cega-sdk-sol",
-  "version": "1.0.2",
+  "version": "1.0.8",
   "description": "A sdk to communicate with Cega's Solana SC vaults",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -39,6 +39,7 @@
   "dependencies": {
     "@metaplex-foundation/mpl-token-metadata": "2.2.3",
     "@project-serum/anchor": "0.24.2",
+    "@solana/codecs": "2.0.0-rc.1",
     "@solana/spl-token": "0.2.0",
     "@solana/web3.js": "1.95.3",
     "@types/node": "^22.7.4",
