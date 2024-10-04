@@ -69,7 +69,7 @@ export class CegaSDK {
     return this._stateAddress;
   }
 
-  private _stateAddress: PublicKey = PublicKey.default;
+  private _stateAddress!: PublicKey;
 
   // public get vaultAuthority(): PublicKey {
   //   return this._vaultAuthority;
@@ -79,28 +79,19 @@ export class CegaSDK {
     return this._productAuthority;
   }
 
-  private _productAuthority: PublicKey = PublicKey.default;
+  private _productAuthority!: PublicKey;
 
   public get state(): types.State {
     return this._state;
   }
 
-  private _state: types.State = {
-    stateNonce: new anchor.BN(0),
-    productAuthorityNonce: new anchor.BN(0),
-    admin: PublicKey.default,
-    nextAdmin: PublicKey.default,
-    managementFeePercentage: new anchor.BN(0),
-    yieldFeePercentage: new anchor.BN(0),
-    feeRecipient: PublicKey.default,
-    traderAdmin: PublicKey.default,
-  };
+  private _state!: types.State;
 
   public get products(): types.Product[] {
     return this._products;
   }
 
-  private _products: types.Product[] = [];
+  private _products!: types.Product[];
 
   public get vaults(): types.Vault[] {
     return this._vaults;
@@ -1715,7 +1706,7 @@ export class CegaSDK {
 
     let underlyingTokenAccountAddress: PublicKey;
     const tx = new Transaction();
-    const keypair: Keypair = Keypair.generate();
+    let keypair: Keypair;
 
     try {
       underlyingTokenAccountAddress = await getAssociatedTokenAddress(
@@ -1742,7 +1733,7 @@ export class CegaSDK {
       ),
     );
 
-    const txSig = await utils.processTransaction(Program.VAULT, this._provider, tx, [keypair]);
+    const txSig = await utils.processTransaction(Program.VAULT, this._provider, tx, [keypair!]);
     await this.updateState();
     return txSig;
   }
@@ -1804,7 +1795,7 @@ export class CegaSDK {
       }
 
       // Create underlying token account for user if they don't have it
-      let underlyingTokenAccountAddress: PublicKey = PublicKey.default;
+      let underlyingTokenAccountAddress: PublicKey;
       try {
         underlyingTokenAccountAddress = await getAssociatedTokenAddress(
           vault.underlyingMint,
@@ -1818,7 +1809,7 @@ export class CegaSDK {
         tx.add(
           await createAssociatedTokenAccountInstruction(
             this.provider.wallet.publicKey,
-            underlyingTokenAccountAddress,
+            underlyingTokenAccountAddress!,
             this.provider.wallet.publicKey,
             vault.underlyingMint,
           ),
@@ -1833,7 +1824,7 @@ export class CegaSDK {
           this.productAuthority,
           this.provider.wallet.publicKey,
           new anchor.BN(redeemableAmount),
-          underlyingTokenAccountAddress,
+          underlyingTokenAccountAddress!,
           redeemableTokenAccountAddress,
           productAddress,
           vault.address,
