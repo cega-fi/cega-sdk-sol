@@ -1,6 +1,6 @@
 import * as dotenv from 'dotenv';
 import { BN, web3 } from '@project-serum/anchor';
-import { PublicKey } from '@solana/web3.js';
+import { PublicKey, Keypair } from '@solana/web3.js';
 import { CegaSDK } from '../vault/sdk';
 import { Network } from '../common/network';
 import { DummyWallet, Wallet } from '../common/types';
@@ -13,15 +13,16 @@ const TRANSACTION_TIMEOUT = 10 * 60 * 1000; // 10 minutes
 const PROGRAM_ID = process.env.PROGRAM_ID || '';
 const ADMIN_WALLET_PK = process.env.ADMIN_PK || '';
 const privateKey = bs58.decode(ADMIN_WALLET_PK);
-const keypair = web3.Keypair.fromSecretKey(privateKey);
+const keypair = Keypair.fromSecretKey(privateKey);
 
 async function initSdk(): Promise<CegaSDK> {
   console.log('Initializing SDK');
   console.log('RPC_URL', RPC_URL);
   console.log('PROGRAM_ID', PROGRAM_ID);
+  console.log('ADMIN_WALLET_PK', ADMIN_WALLET_PK);
 
   const connection = new web3.Connection(RPC_URL, {
-    commitment: 'processed',
+    commitment: 'confirmed',
     confirmTransactionInitialTimeout: TRANSACTION_TIMEOUT,
   });
   const sdk = await CegaSDK.load(
@@ -58,7 +59,7 @@ export function parseAmountSolana(value: string | number): BN {
 }
 
 async function addToDepositQueue(sdk: CegaSDK) {
-  const productContractAddress = 'HGAp6kzGpk9NwYLA1xmNH5AjJx3M37SvBXc7kWfST9dz'; // update with the product contract address
+  const productContractAddress = '5LZJ8MscKPUGToyWtZERSwgKBJ3svPn8rT9Lcp5UnrcY'; // update with the product contract address
   const amount = 100000; // USDC - 6 decimals = 1 USDC
   const productPublicKey = new PublicKey(productContractAddress);
   console.log('Adding to deposit queue');

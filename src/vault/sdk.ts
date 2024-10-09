@@ -2024,25 +2024,38 @@ export class CegaSDK {
 
   public async updateProgramState() {
     try {
+      console.log('updating program state');
       this._state = (await this._program.account.state.fetch(this._stateAddress)) as types.State;
+      console.log('program state updated');
     } catch (e) {
       console.log('State account not initialized yet.');
     }
   }
 
   public async updateState() {
-    await Promise.all([this.updateProgramState, this.updateProducts(), this.updateVaults()]);
+    // await Promise.all([this.updateProgramState, this.updateProducts(), this.updateVaults()]);
+    await this.updateProgramState();
+    await this.updateProducts();
+    await this.updateVaults();
+    console.log('state updated for program, products, and vaults');
     await this.updateWithdrawalQueues();
+    console.log('withdrawal queues updated');
     await this.updateDepositQueues();
+
+    console.log('deposit queues updated');
   }
 
   public async updateProducts() {
+    console.log('updating products');
     const accs: anchor.ProgramAccount[] = await this.program.account.product.all();
+
+    console.log('accs', accs);
 
     const products = await Promise.all(
       accs.map(async (acc) => {
         // TODO: figure out what the fallback state is
         const product = acc.account as programTypes.Product;
+        console.log('product', product);
         return {
           address: acc.publicKey,
           productName: Buffer.from(product.productName).toString().trim(),
@@ -2061,10 +2074,12 @@ export class CegaSDK {
       }),
     );
     this._products = products;
+    console.log('products updated');
     return products;
   }
 
   public async updateVaults() {
+    console.log('updating vaults');
     const accs: anchor.ProgramAccount[] = await this.program.account.vault.all();
     const vaults = await Promise.all(
       accs.map(async (acc) => {
@@ -2115,6 +2130,7 @@ export class CegaSDK {
     );
 
     this._vaults = vaults;
+    console.log('vaults updated');
     return vaults;
   }
 
