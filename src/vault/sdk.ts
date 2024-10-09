@@ -15,7 +15,7 @@ import {
   createAssociatedTokenAccountInstruction,
   Account,
 } from '@solana/spl-token';
-import * as mpl from '@metaplex-foundation/mpl-token-metadata';
+import { MPL_TOKEN_METADATA_PROGRAM_ID as MPL_TOKEN_METADATA_PROGRAM_ID_STRING } from '@metaplex-foundation/mpl-token-metadata';
 import idl from '../idl/cega_vault.json';
 import { CegaVault } from '../types/cega_vault';
 import { Network } from '../common/network';
@@ -28,6 +28,8 @@ import * as programTypes from './program-types';
 import * as types from './types';
 import * as vaultConstants from './constants';
 import { SOL_PRIORITY_FEE } from '../config/environment';
+
+const MPL_TOKEN_METADATA_PROGRAM_ID = new PublicKey(MPL_TOKEN_METADATA_PROGRAM_ID_STRING);
 
 export class CegaSDK {
   public get isInitialized(): boolean {
@@ -2253,7 +2255,7 @@ export class CegaSDK {
         name,
         symbol,
         uri,
-        mpl.PROGRAM_ID,
+        MPL_TOKEN_METADATA_PROGRAM_ID,
         this.program,
       ),
     );
@@ -2286,7 +2288,7 @@ export class CegaSDK {
         name,
         symbol,
         uri,
-        mpl.PROGRAM_ID,
+        MPL_TOKEN_METADATA_PROGRAM_ID,
         this.program,
       ),
     );
@@ -2315,7 +2317,7 @@ export class CegaSDK {
     );
     const [metadataAccount, _metadataAccountNonce] = await vaultUtils.getMetadataAccountAddress(
       redeemableMint,
-      mpl.PROGRAM_ID,
+      MPL_TOKEN_METADATA_PROGRAM_ID,
     );
 
     const metadataInfo = await this._provider.connection.getAccountInfo(metadataAccount);
