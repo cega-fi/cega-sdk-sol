@@ -76,6 +76,9 @@ async function main() {
     await updateWallet(sdk);
     console.log('Wallet updated', sdk.state.admin);
 
+    await sdk.updateState();
+    console.log('State updated', sdk.state);
+
     // deposit
     await addToDepositQueue(sdk);
   }
