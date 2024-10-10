@@ -1,7 +1,3 @@
-/* eslint-disable max-len */
-/* eslint-disable no-plusplus */
-/* eslint-disable no-unreachable-loop */
-/* eslint-disable no-await-in-loop */
 import * as anchor from '@project-serum/anchor';
 import {
   PublicKey,
@@ -73,7 +69,7 @@ export class CegaSDK {
     return this._stateAddress;
   }
 
-  private _stateAddress: PublicKey = PublicKey.default;
+  private _stateAddress!: PublicKey;
 
   // public get vaultAuthority(): PublicKey {
   //   return this._vaultAuthority;
@@ -83,28 +79,19 @@ export class CegaSDK {
     return this._productAuthority;
   }
 
-  private _productAuthority: PublicKey = PublicKey.default;
+  private _productAuthority!: PublicKey;
 
   public get state(): types.State {
     return this._state;
   }
 
-  private _state: types.State = {
-    stateNonce: new anchor.BN(0),
-    productAuthorityNonce: new anchor.BN(0),
-    admin: PublicKey.default,
-    nextAdmin: PublicKey.default,
-    managementFeePercentage: new anchor.BN(0),
-    yieldFeePercentage: new anchor.BN(0),
-    feeRecipient: PublicKey.default,
-    traderAdmin: PublicKey.default,
-  };
+  private _state!: types.State;
 
   public get products(): types.Product[] {
     return this._products;
   }
 
-  private _products: types.Product[] = [];
+  private _products!: types.Product[];
 
   public get vaults(): types.Vault[] {
     return this._vaults;
@@ -263,7 +250,7 @@ export class CegaSDK {
     );
     const txSig = await utils.processTransaction(Program.VAULT, this._provider, tx);
     await this.updateVaults();
-    console.log(`🎶 sig: ${txSig}`);
+    console.info(`🎶 sig: ${txSig}`);
     return txSig;
   }
 
@@ -330,7 +317,7 @@ export class CegaSDK {
     );
 
     const txSig = await utils.processTransaction(Program.VAULT, this._provider, tx);
-    console.log(`txSig: ${txSig}`);
+    console.info(`txSig: ${txSig}`);
 
     return txSig;
   }
@@ -358,7 +345,7 @@ export class CegaSDK {
     const txSig = await utils.processTransaction(Program.VAULT, this._provider, tx);
     await this.updateProducts();
     await this.updateVaults();
-    console.log(`🍷 initialized. Signature: ${txSig}`);
+    console.info(`🍷 initialized. Signature: ${txSig}`);
     return txSig;
   }
 
@@ -382,7 +369,7 @@ export class CegaSDK {
     try {
       await getAccount(this._provider.connection, productAuthorityUnderlyingToken);
     } catch (e) {
-      console.log(
+      console.error(
         `Program hasn't initialized programUsdcTokenAccount yet. Address is: ${productAuthorityUnderlyingToken.toString()}. Creating account.`,
       );
       tx.add(
@@ -461,8 +448,11 @@ export class CegaSDK {
           this.programId,
         );
       await getAccount(this._provider.connection, programUsdcTokenAccount);
-    } catch (e) {
-      console.log("Program hasn't initialized programUsdcTokenAccount yet. Adding instruction.");
+    } catch (error) {
+      console.error(
+        "Program hasn't initialized programUsdcTokenAccount yet. Adding instruction.",
+        error,
+      );
       tx.add(
         await instructions.initializeProgramUsdcAccountIx(
           this.stateAddress,
@@ -535,8 +525,11 @@ export class CegaSDK {
       try {
         await getAccount(this._provider.connection, productAuthorityUnderlyingToken);
       } catch (e) {
-        console.log(
-          `Program hasn't initialized programUsdcTokenAccount yet. Address is: ${productAuthorityUnderlyingToken.toString()}. Creating account.`,
+        console.error(
+          'Program has not initialized programUsdcTokenAccount yet. Address is:',
+          productAuthorityUnderlyingToken.toString(),
+          'Creating account.',
+          e,
         );
         tx.add(
           await instructions.initializeProgramUsdcAccountIx(
@@ -604,7 +597,7 @@ export class CegaSDK {
       try {
         await getAccount(this._provider.connection, marketMakerUnderlyingTokenAccount);
       } catch (e) {
-        console.log(
+        console.info(
           `Market Maker does not have associated USDC token account: ${marketMakerUnderlyingTokenAccount}. Creating account for them.`,
         );
 
@@ -896,7 +889,6 @@ export class CegaSDK {
       const withdrawQueue = vault.withdrawalQueue;
 
       if (withdrawQueue.length !== 0) {
-        console.log('Processing withdrawal queue... Length: ', withdrawQueue.length);
         for (let i = 0; i < withdrawQueue.length; i += vaultConstants.PROCESS_QUEUE_ACCOUNT_LIMIT) {
           const remainingAccounts: AccountMeta[] = [];
           const slice = withdrawQueue.slice(i, i + vaultConstants.PROCESS_QUEUE_ACCOUNT_LIMIT);
@@ -911,7 +903,7 @@ export class CegaSDK {
             try {
               await getAccount(this._provider.connection, userUnderlyingTokenAccountAddress);
             } catch (e) {
-              console.log(
+              console.info(
                 `User does not have userUnderlyingTokenAccountAddress: ${userUnderlyingTokenAccountAddress}. Creating account.`,
               );
               const tx2 = new Transaction();
@@ -963,7 +955,7 @@ export class CegaSDK {
           txs.push(tx);
         }
       } else {
-        console.log('Empty withdrawal queue...');
+        console.info('Empty withdrawal queue...');
         // Need to still have a transaction to set vault status to
         // VaultStatus::WithdrawQueueProcessed
         const tx = new Transaction();
@@ -1007,7 +999,6 @@ export class CegaSDK {
       const withdrawQueue = vault.withdrawalQueue;
 
       if (withdrawQueue.length !== 0) {
-        console.log('Processing withdrawal queue... Length: ', withdrawQueue.length);
         for (let i = 0; i < withdrawQueue.length; i += 10) {
           const slice = withdrawQueue.slice(i, i + 10);
           for (let j = 0; j < slice.length; j += 1) {
@@ -1021,7 +1012,7 @@ export class CegaSDK {
             try {
               await getAccount(this._provider.connection, userUnderlyingTokenAccountAddress);
             } catch (e) {
-              console.log(
+              console.info(
                 `Queue node #${j} does not have userUnderlyingTokenAccountAddress: ${userUnderlyingTokenAccountAddress}. Creating account.`,
               );
               const tx2 = new Transaction();
@@ -1115,7 +1106,7 @@ export class CegaSDK {
           } catch (e) {
             // If there is already an instruction to create the ATA, we don't want to add it again
             if (!(userRedeemableTokenAccountAddress.toString() in createATAIxsForAddresses)) {
-              console.log(
+              console.info(
                 `User does not have userRedeemableTokenAccountAddress: ${userRedeemableTokenAccountAddress}. Creating account.`,
               );
               const tx2 = new Transaction();
@@ -1192,11 +1183,7 @@ export class CegaSDK {
     const createATAIxsForAddresses: Record<string, boolean> = {};
     const txSigatures = [];
     for (const entry of entries) {
-      console.log(
-        `${new Date().toISOString()} Updating deposit queue for producut addr: ${entry.productAddress}`,
-      );
       await this.updateDepositQueue(entry.productAddress);
-      console.log(`${new Date().toISOString()} Finished updating deposit queue`);
       const product = this.getProduct(entry.productAddress);
       const vault = this.getVault(entry.vaultAddress);
       const { depositQueue } = product;
@@ -1204,7 +1191,7 @@ export class CegaSDK {
       let bulkTransaction = new Transaction();
       const maxNumberOfIxPerTransaction = 10;
       let numAccountsToCreate = 0;
-      console.log('Deposit queue length: ', depositQueue.length);
+      console.info('Deposit queue length: ', depositQueue.length);
       for (let i = 0; i < depositQueue.length; i += 1) {
         const userRedeemableTokenAccountAddress = await getAssociatedTokenAddress(
           vault.redeemableMint,
@@ -1218,7 +1205,7 @@ export class CegaSDK {
         } catch (e) {
           // If there is already an instruction to create the ATA, we don't want to add it again
           if (!(userRedeemableTokenAccountAddress.toString() in createATAIxsForAddresses)) {
-            console.log(
+            console.info(
               `User does not have userRedeemableTokenAccountAddress: ${userRedeemableTokenAccountAddress}. Creating account.`,
             );
             bulkTransaction.add(
@@ -1238,7 +1225,7 @@ export class CegaSDK {
           (numAccountsToCreate === maxNumberOfIxPerTransaction || i === depositQueue.length - 1) &&
           numAccountsToCreate > 0
         ) {
-          console.log(`creating ${numAccountsToCreate} token accounts`);
+          console.info(`creating ${numAccountsToCreate} token accounts`);
 
           // Add compute budget instructions
           bulkTransaction.add(
@@ -1256,7 +1243,7 @@ export class CegaSDK {
             );
             txSigatures.push(txSig);
           } catch (e) {
-            console.log('Error creating token accounts: ', e);
+            console.error('Error creating token accounts: ', e);
           }
 
           numAccountsToCreate = 0;
@@ -1264,7 +1251,7 @@ export class CegaSDK {
         }
       }
     }
-    console.log('Completed creating mint tokens.');
+    console.info('Completed creating mint tokens.');
     return txSigatures;
   }
 
@@ -1719,7 +1706,7 @@ export class CegaSDK {
 
     let underlyingTokenAccountAddress: PublicKey;
     const tx = new Transaction();
-    let keypair: Keypair = Keypair.generate();
+    let keypair: Keypair;
 
     try {
       underlyingTokenAccountAddress = await getAssociatedTokenAddress(
@@ -1729,7 +1716,7 @@ export class CegaSDK {
 
       await getAccount(this._provider.connection, underlyingTokenAccountAddress);
     } catch (e) {
-      throw Error(
+      throw new Error(
         `User does not have associated token account for ${product.underlyingMint.toString}. Deposit failed.`,
       );
     }
@@ -1746,7 +1733,7 @@ export class CegaSDK {
       ),
     );
 
-    const txSig = await utils.processTransaction(Program.VAULT, this._provider, tx, [keypair]);
+    const txSig = await utils.processTransaction(Program.VAULT, this._provider, tx, [keypair!]);
     await this.updateState();
     return txSig;
   }
@@ -1797,8 +1784,9 @@ export class CegaSDK {
           redeemableTokenAccountAddress,
         );
       } catch (e) {
-        console.log(
+        console.error(
           'Withdrawal failed. User does not have associated token account for redeemable mint.',
+          e,
         );
         continue;
       }
@@ -1808,7 +1796,7 @@ export class CegaSDK {
       }
 
       // Create underlying token account for user if they don't have it
-      let underlyingTokenAccountAddress: PublicKey = PublicKey.default;
+      let underlyingTokenAccountAddress: PublicKey;
       try {
         underlyingTokenAccountAddress = await getAssociatedTokenAddress(
           vault.underlyingMint,
@@ -1816,13 +1804,13 @@ export class CegaSDK {
         );
         await getAccount(this._provider.connection, underlyingTokenAccountAddress);
       } catch (e) {
-        console.log(
+        console.info(
           `User does not have associated token account for ${vault.underlyingMint.toString}. Creating now...`,
         );
         tx.add(
           await createAssociatedTokenAccountInstruction(
             this.provider.wallet.publicKey,
-            underlyingTokenAccountAddress,
+            underlyingTokenAccountAddress!,
             this.provider.wallet.publicKey,
             vault.underlyingMint,
           ),
@@ -1837,7 +1825,7 @@ export class CegaSDK {
           this.productAuthority,
           this.provider.wallet.publicKey,
           new anchor.BN(redeemableAmount),
-          underlyingTokenAccountAddress,
+          underlyingTokenAccountAddress!,
           redeemableTokenAccountAddress,
           productAddress,
           vault.address,
@@ -1947,7 +1935,7 @@ export class CegaSDK {
       }
       return depositQueue;
     } catch (e) {
-      console.log(`Deposit Queue not initialized for product ${productAddress.toString()}`);
+      console.error(`Deposit Queue not initialized for product ${productAddress.toString()}`, e);
       return [];
     }
   }
@@ -2033,7 +2021,7 @@ export class CegaSDK {
     try {
       this._state = (await this._program.account.state.fetch(this._stateAddress)) as types.State;
     } catch (e) {
-      console.log('State account not initialized yet.');
+      console.error('State account not initialized yet.', e);
     }
   }
 
@@ -2061,7 +2049,7 @@ export class CegaSDK {
           underlyingAmount: product.underlyingAmount.toNumber(),
           mapleAccount: product.mapleAccount,
           depositQueueHeader: product.depositQueueHeader,
-          // eslint-disable-next-line max-len
+
           depositQueue: [], // need to call updateDepositQueue separately, there's a race condition where product doesnt exist so cant fetch queueHeader
           isActive: product.isActive,
         };
@@ -2355,7 +2343,7 @@ export class CegaSDK {
         underlyingAmount: product.underlyingAmount.toNumber(),
         mapleAccount: product.mapleAccount,
         depositQueueHeader: product.depositQueueHeader,
-        // eslint-disable-next-line max-len
+
         depositQueue: [], // need to call updateDepositQueue separately, there's a race condition where product doesnt exist so cant fetch queueHeader
         isActive: product.isActive,
       };
@@ -2522,7 +2510,7 @@ export class CegaSDK {
         }
       }
     } catch (e) {
-      console.log(`Queue not initialized ${queueHeaderAddress.toString()}`);
+      console.error(`Queue not initialized ${queueHeaderAddress.toString()}`, e);
     }
 
     return queue;
