@@ -1,6 +1,7 @@
 # Cega SDK for Solana Smart Contract Vaults
 
-**Version: 1.0.0**
+[![npm (tag)](https://img.shields.io/npm/v/@cega-fi/cega-sdk-sol)](https://www.npmjs.com/package/@cega-fi/cega-sdk-sol)
+[![npm bundle size (scoped version)](https://img.shields.io/bundlephobia/minzip/@cega-fi/cega-sdk-sol/latest.svg)](https://bundlephobia.com/result?p=@cega-fi/cega-sdk-sol@latest)
 
 This is the official SDK for interacting with Cega’s Solana-based smart contract (SC) vaults. It provides an interface to communicate with Cega’s vaults on the Solana blockchain, allowing developers to integrate these functionalities into their projects with ease.
 
@@ -56,6 +57,7 @@ This script formats all the files in the project using Prettier, ensuring that y
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
-## Documentation
+## Resources
 
-[Coming soon]
+- Cega dApp - [app.cega.fi](https://app.cega.fi/)
+- Cega Docs - [docs.cega.fi](https://docs.cega.fi)

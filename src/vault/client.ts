@@ -1,5 +1,3 @@
-/* eslint-disable no-await-in-loop */
-/* eslint-disable no-continue */
 import * as anchor from '@project-serum/anchor';
 import {
   PublicKey,
@@ -168,7 +166,9 @@ export class CegaClient {
     try {
       await getAccount(this._provider.connection, redeemableTokenAccountAddress);
     } catch (e) {
-      ('User does not have associated token account for redeemable mint. Creating account.');
+      console.info(
+        'User does not have associated token account for redeemable mint. Creating account.',
+      );
       userRedeemableTokenAddress = await getAssociatedTokenAddress(
         vault.redeemableMint,
         this.publicKey,
@@ -214,7 +214,7 @@ export class CegaClient {
 
     let underlyingTokenAccountAddress: PublicKey;
     const tx = new Transaction();
-    let keypair: Keypair = Keypair.generate();
+    const keypair: Keypair = Keypair.generate();
 
     try {
       underlyingTokenAccountAddress = await getAssociatedTokenAddress(
@@ -291,7 +291,9 @@ export class CegaClient {
     try {
       await getAccount(this._provider.connection, redeemableTokenAccountAddress);
     } catch (e) {
-      ('User does not have associated token account for redeemable mint. Creating account.');
+      console.info(
+        'User does not have associated token account for redeemable mint. Creating account.',
+      );
       tx.add(
         await createAssociatedTokenAccountInstruction(
           this.publicKey,
@@ -392,7 +394,7 @@ export class CegaClient {
 
       await getAccount(this._provider.connection, underlyingTokenAccountAddress);
     } catch (e) {
-      console.log(
+      console.info(
         `User does not have associated token account for ${vault.underlyingMint.toString}. Creating now.`,
       );
       tx.add(
@@ -420,10 +422,10 @@ export class CegaClient {
       ),
     );
 
-    let keypair: Keypair = Keypair.generate();
+    const keypair: Keypair = Keypair.generate();
     const txSig = await utils.processTransaction(Program.VAULT, this._provider, tx, [keypair]);
     await this.updateState();
-    console.log('Withdrawal successful');
+    console.info('Withdrawal successful');
     return txSig;
   }
 
@@ -442,7 +444,11 @@ export class CegaClient {
             redeemableTokenAccountAddress,
           );
           tokens = Number(tokenAccount.amount);
-        } catch (e) {}
+        } catch (e) {
+          console.error(
+            'User does not have associated token account for redeemable mint. Skipping...',
+          );
+        }
         vaultTokens.push({
           vault: vault.address,
           tokenAccount: redeemableTokenAccountAddress,
@@ -494,7 +500,7 @@ export class CegaClient {
           redeemableTokenAccountAddress,
         );
       } catch (e) {
-        console.log(
+        console.info(
           'Withdrawal failed. User does not have associated token account for redeemable mint.',
         );
         continue;
@@ -513,7 +519,7 @@ export class CegaClient {
         );
         await getAccount(this._provider.connection, underlyingTokenAccountAddress);
       } catch (e) {
-        console.log(
+        console.info(
           `User does not have associated token account for ${vault.underlyingMint.toString}. Creating now...`,
         );
         tx.add(
@@ -555,7 +561,7 @@ export class CegaClient {
       txSigs.push(txSig);
     }
     await this.updateState();
-    console.log(txSigs);
+    console.info(txSigs);
     return txSigs[0];
   }
 
