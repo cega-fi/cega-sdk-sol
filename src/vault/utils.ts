@@ -24,14 +24,14 @@ export const PROGRAM_USDC_TOKEN_SEED = 'program-usdc-token';
 export const METADATA_SEED = 'metadata';
 
 export async function getStateAddress(programId: PublicKey): Promise<[PublicKey, number]> {
-  return PublicKey.findProgramAddress([Buffer.from('state')], programId);
+  return PublicKey.findProgramAddressSync([Buffer.from('state')], programId);
 }
 
 export async function getProductAddress(
   productName: string,
   programId: PublicKey,
 ): Promise<[PublicKey, number]> {
-  return PublicKey.findProgramAddress(
+  return PublicKey.findProgramAddressSync(
     [Buffer.from(PRODUCT_SEED), Buffer.from(productName)],
     programId,
   );
@@ -41,7 +41,7 @@ export async function getProductUnderlyingTokenAddress(
   product: PublicKey,
   programId: PublicKey,
 ): Promise<[PublicKey, number]> {
-  return PublicKey.findProgramAddress(
+  return PublicKey.findProgramAddressSync(
     [Buffer.from(PRODUCT_UNDERLYING_SEED), product.toBuffer()],
     programId,
   );
@@ -51,7 +51,7 @@ export async function getDepositQueueHeaderAddress(
   productAddress: PublicKey,
   programId: PublicKey,
 ): Promise<[PublicKey, number]> {
-  return PublicKey.findProgramAddress(
+  return PublicKey.findProgramAddressSync(
     [Buffer.from(DEPOSIT_QUEUE_SEED), productAddress.toBuffer()],
     programId,
   );
@@ -63,7 +63,7 @@ export async function getDepositQueueNodeAddress(
   seqNum: anchor.BN,
   programId: PublicKey,
 ): Promise<[PublicKey, number]> {
-  return PublicKey.findProgramAddress(
+  return PublicKey.findProgramAddressSync(
     [
       Buffer.from(DEPOSIT_QUEUE_SEED),
       queueHeader.toBuffer(),
@@ -79,7 +79,7 @@ export async function getVaultAddress(
   vaultNumber: anchor.BN,
   programId: PublicKey,
 ): Promise<[PublicKey, number]> {
-  return PublicKey.findProgramAddress(
+  return PublicKey.findProgramAddressSync(
     [Buffer.from(productName), vaultNumber.toArrayLike(Buffer, 'le', 8)],
     programId,
   );
@@ -90,7 +90,7 @@ export async function getOptionBarrierAddress(
   vaultAddress: PublicKey,
   programId: PublicKey,
 ): Promise<[PublicKey, number]> {
-  return PublicKey.findProgramAddress(
+  return PublicKey.findProgramAddressSync(
     [optionNumber.toArrayLike(Buffer, 'le', 8), vaultAddress.toBuffer()],
     programId,
   );
@@ -100,7 +100,7 @@ export async function getRedeemableMintAddress(
   vaultAddress: PublicKey,
   programId: PublicKey,
 ): Promise<[PublicKey, number]> {
-  return PublicKey.findProgramAddress(
+  return PublicKey.findProgramAddressSync(
     [Buffer.from(REDEEMABLE_MINT_SEED), vaultAddress.toBuffer()],
     programId,
   );
@@ -110,7 +110,7 @@ export async function getOptionMintAddress(
   vaultAddress: PublicKey,
   programId: PublicKey,
 ): Promise<[PublicKey, number]> {
-  return PublicKey.findProgramAddress(
+  return PublicKey.findProgramAddressSync(
     [Buffer.from(OPTION_MINT_SEED), vaultAddress.toBuffer()],
     programId,
   );
@@ -119,14 +119,14 @@ export async function getOptionMintAddress(
 export async function getProductAuthorityAddress(
   programId: PublicKey,
 ): Promise<[PublicKey, number]> {
-  return PublicKey.findProgramAddress([Buffer.from(PRODUCT_AUTHORITY_SEED)], programId);
+  return PublicKey.findProgramAddressSync([Buffer.from(PRODUCT_AUTHORITY_SEED)], programId);
 }
 
 export async function getProductUnderlyingTokenAccountAddress(
   productAddress: PublicKey,
   programId: PublicKey,
 ): Promise<[PublicKey, number]> {
-  return PublicKey.findProgramAddress(
+  return PublicKey.findProgramAddressSync(
     [Buffer.from(PRODUCT_UNDERLYING_SEED), productAddress.toBuffer()],
     programId,
   );
@@ -137,7 +137,10 @@ export async function getVaultOptionTokenAccountAddress(
   vaultAddress: PublicKey,
   programId: PublicKey,
 ): Promise<[PublicKey, number]> {
-  return PublicKey.findProgramAddress([optionMint.toBuffer(), vaultAddress.toBuffer()], programId);
+  return PublicKey.findProgramAddressSync(
+    [optionMint.toBuffer(), vaultAddress.toBuffer()],
+    programId,
+  );
 }
 
 export async function getProgramUsdcTokenAccountAddress(
@@ -145,7 +148,7 @@ export async function getProgramUsdcTokenAccountAddress(
   productAuthorityAddress: PublicKey,
   programId: PublicKey,
 ): Promise<[PublicKey, number]> {
-  return PublicKey.findProgramAddress(
+  return PublicKey.findProgramAddressSync(
     [
       Buffer.from(PROGRAM_USDC_TOKEN_SEED),
       underlyingMint.toBuffer(),
@@ -160,14 +163,14 @@ export async function getDepositInfoAccountAddress(
   vaultAddress: PublicKey,
   programId: PublicKey,
 ): Promise<[PublicKey, number]> {
-  return PublicKey.findProgramAddress([userKey.toBuffer(), vaultAddress.toBuffer()], programId);
+  return PublicKey.findProgramAddressSync([userKey.toBuffer(), vaultAddress.toBuffer()], programId);
 }
 
 export async function getWithdrawQueueHeaderAddress(
   vaultAddress: PublicKey,
   programId: PublicKey,
 ): Promise<[PublicKey, number]> {
-  return PublicKey.findProgramAddress(
+  return PublicKey.findProgramAddressSync(
     [Buffer.from(WITHDRAW_QUEUE_SEED), vaultAddress.toBuffer()],
     programId,
   );
@@ -179,7 +182,7 @@ export async function getWithdrawQueueNodeAddress(
   seqNum: anchor.BN,
   programId: PublicKey,
 ): Promise<[PublicKey, number]> {
-  return PublicKey.findProgramAddress(
+  return PublicKey.findProgramAddressSync(
     [
       Buffer.from(WITHDRAW_QUEUE_SEED),
       queueHeader.toBuffer(),
@@ -194,7 +197,7 @@ export async function getVaultWithdrawQueueRedeemableTokenAccountAddress(
   vaultAddress: PublicKey,
   programId: PublicKey,
 ): Promise<[PublicKey, number]> {
-  return PublicKey.findProgramAddress(
+  return PublicKey.findProgramAddressSync(
     [Buffer.from(VAULT_WITHDRAW_QUEUE_REDEEMABLE_SEED), vaultAddress.toBuffer()],
     programId,
   );
@@ -204,7 +207,7 @@ export async function getStructuredProductInfoAccountAddress(
   vaultAddress: PublicKey,
   programId: PublicKey,
 ): Promise<[PublicKey, number]> {
-  return PublicKey.findProgramAddress(
+  return PublicKey.findProgramAddressSync(
     [Buffer.from(STRUCTURED_PRODUCT_INFO_SEED), vaultAddress.toBuffer()],
     programId,
   );
@@ -214,7 +217,7 @@ export async function getMetadataAccountAddress(
   redeemableMint: PublicKey,
   mplTokenMetadataProgram: PublicKey,
 ): Promise<[PublicKey, number]> {
-  return PublicKey.findProgramAddress(
+  return PublicKey.findProgramAddressSync(
     [Buffer.from(METADATA_SEED), mplTokenMetadataProgram.toBuffer(), redeemableMint.toBuffer()],
     mplTokenMetadataProgram,
   );
@@ -245,7 +248,7 @@ export async function getNthPutAccountAddress(
     default:
       break;
   }
-  return PublicKey.findProgramAddress(
+  return PublicKey.findProgramAddressSync(
     [Buffer.from(seedConstant), vaultAddress.toBuffer()],
     programId,
   );
@@ -255,7 +258,7 @@ export async function getRandomAccount(
   vaultAddress: PublicKey,
   programId: PublicKey,
 ): Promise<[PublicKey, number]> {
-  return PublicKey.findProgramAddress(
+  return PublicKey.findProgramAddressSync(
     [Buffer.from('random-lol'), vaultAddress.toBuffer()],
     programId,
   );

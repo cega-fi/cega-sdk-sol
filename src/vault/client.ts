@@ -17,7 +17,6 @@ import {
 import idl from '../idl/cega_vault.json';
 import { CegaVault } from '../types/cega_vault';
 import { CegaSDK } from './sdk';
-import { Wallet } from '../common/types';
 import * as utils from '../common/utils';
 import * as vaultUtils from './utils';
 import * as instructions from './instructions';
@@ -89,7 +88,7 @@ export class CegaClient {
 
   private constructor(
     connection: Connection,
-    wallet: Wallet,
+    wallet: anchor.Wallet,
     cegaSDK: any,
     opts = utils.defaultCommitment(),
   ) {
@@ -104,7 +103,7 @@ export class CegaClient {
 
   public static async load(
     connection: Connection,
-    wallet: Wallet,
+    wallet: anchor.Wallet,
     cegaSDK: any,
     opts = utils.defaultCommitment(),
   ): Promise<CegaClient> {

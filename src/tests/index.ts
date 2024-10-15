@@ -1,9 +1,8 @@
 import * as dotenv from 'dotenv';
-import { BN, web3 } from '@project-serum/anchor';
+import { BN, Wallet, web3 } from '@project-serum/anchor';
 import { PublicKey, Keypair } from '@solana/web3.js';
 import { CegaSDK } from '../vault/sdk';
 import { Network } from '../common/network';
-import { DummyWallet, Wallet } from '../common/types';
 import { bs58 } from '@project-serum/anchor/dist/cjs/utils/bytes';
 
 dotenv.config();
@@ -14,8 +13,22 @@ const PROGRAM_ID = process.env.PROGRAM_ID || '';
 const ADMIN_WALLET_PK = process.env.ADMIN_PK || '';
 const privateKey = bs58.decode(ADMIN_WALLET_PK);
 const keypair = Keypair.fromSecretKey(privateKey);
+const customWallet: Wallet = {
+  publicKey: keypair.publicKey,
+  signTransaction: async (transaction) => {
+    transaction.sign(keypair);
+    return transaction;
+  },
+  signAllTransactions: async (transactions) => {
+    return transactions.map((tx) => {
+      tx.sign(keypair);
+      return tx;
+    });
+  },
+  payer: keypair,
+};
 
-async function initSdk(): Promise<CegaSDK> {
+async function initSdk(wallet: Wallet): Promise<CegaSDK> {
   console.log('Initializing SDK');
   console.log('RPC_URL', RPC_URL);
   console.log('PROGRAM_ID', PROGRAM_ID);
@@ -25,33 +38,8 @@ async function initSdk(): Promise<CegaSDK> {
     commitment: 'confirmed',
     confirmTransactionInitialTimeout: TRANSACTION_TIMEOUT,
   });
-  const sdk = await CegaSDK.load(
-    new PublicKey(PROGRAM_ID),
-    Network.MAINNET,
-    connection,
-    new DummyWallet(),
-  );
+  const sdk = await CegaSDK.load(new PublicKey(PROGRAM_ID), Network.MAINNET, connection, wallet);
   return sdk;
-}
-
-async function updateWallet(sdk: CegaSDK) {
-  // Create a custom wallet object that implements the Wallet interface
-  const customWallet: Wallet = {
-    publicKey: keypair.publicKey,
-    signTransaction: async (transaction) => {
-      transaction.sign(keypair);
-      return transaction;
-    },
-    signAllTransactions: async (transactions) => {
-      return transactions.map((tx) => {
-        tx.sign(keypair);
-        return tx;
-      });
-    },
-  };
-
-  console.log('Updating wallet');
-  await sdk.updateWallet(customWallet);
 }
 
 export function parseAmountSolana(value: string | number): BN {
@@ -69,13 +57,13 @@ async function addToDepositQueue(sdk: CegaSDK) {
 }
 
 async function main() {
-  const sdk = await initSdk();
+  const sdk = await initSdk(customWallet);
 
   console.log('SDK initialized', sdk.state);
 
   if (sdk) {
-    await updateWallet(sdk);
-    console.log('Wallet updated', sdk.state.admin);
+    await sdk.updateWallet(customWallet);
+    console.log('Wallet updated', sdk.provider.wallet);
 
     await sdk.updateState();
     console.log('State updated', sdk.state);
