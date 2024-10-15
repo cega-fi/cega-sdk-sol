@@ -19,7 +19,6 @@ import * as mpl from '@metaplex-foundation/mpl-token-metadata';
 import idl from '../idl/cega_vault.json';
 import { CegaVault } from '../types/cega_vault';
 import { Network } from '../common/network';
-import { DummyWallet, Wallet } from '../common/types';
 import * as utils from '../common/utils';
 import * as vaultUtils from './utils';
 import * as instructions from './instructions';
@@ -116,7 +115,7 @@ export class CegaSDK {
   private constructor(
     connection: Connection,
     programId: PublicKey,
-    wallet: Wallet,
+    wallet: anchor.Wallet,
     network: Network,
     opts: ConfirmOptions,
   ) {
@@ -136,16 +135,10 @@ export class CegaSDK {
     programId: PublicKey,
     network: Network,
     connection: Connection,
-    wallet: Wallet,
+    wallet: anchor.Wallet,
     opts = utils.defaultCommitment(),
   ): Promise<CegaSDK> {
-    const sdk = new CegaSDK(
-      connection,
-      programId,
-      wallet === undefined ? new DummyWallet() : wallet,
-      network,
-      opts,
-    );
+    const sdk = new CegaSDK(connection, programId, wallet, network, opts);
     const [state, _stateNonce] = await vaultUtils.getStateAddress(programId);
     const [productAuthority, _productAuthorityNonce] =
       await vaultUtils.getProductAuthorityAddress(programId);
@@ -154,12 +147,19 @@ export class CegaSDK {
 
     await sdk.updateProgramState();
 
+    sdk._provider = new anchor.AnchorProvider(sdk._provider.connection, wallet, sdk._provider.opts);
+    sdk._program = new anchor.Program(
+      idl as anchor.Idl,
+      sdk._program.programId,
+      sdk._provider,
+    ) as anchor.Program<CegaVault>;
+
     // TODO: for v2 repo, we're no longer pre-fetching and saving all state
     // await sdk.updateState();
     return sdk;
   }
 
-  public async updateWallet(wallet: Wallet) {
+  public async updateWallet(wallet: anchor.Wallet) {
     this._provider = new anchor.AnchorProvider(
       this._provider.connection,
       wallet,
@@ -1717,7 +1717,7 @@ export class CegaSDK {
       await getAccount(this._provider.connection, underlyingTokenAccountAddress);
     } catch (e) {
       throw new Error(
-        `User does not have associated token account for ${product.underlyingMint.toString}. Deposit failed.`,
+        `User does not have associated token account for ${product.underlyingMint.toString()}. Deposit failed.`,
       );
     }
 
